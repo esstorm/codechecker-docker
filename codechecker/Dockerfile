@@ -26,6 +26,15 @@ RUN useradd -ms /bin/bash casper \
     && echo casper:work | chpasswd \
     && adduser casper sudo
 
+# Dependencies for Postgres
+RUN apt-get update\ 
+    && sudo apt-get -y install \
+    libpq-dev \
+    python-psycopg2 \
+    postgresql-common \
+    python-pip \
+    postgresql-client
+
 RUN apt-get update \
     && sudo apt-get -y install \
         clang \
@@ -40,6 +49,7 @@ RUN apt-get update \
         thrift-compiler \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
 
 ###The above should not change too often.
 # below is the more lightweight stuff that can change more often
