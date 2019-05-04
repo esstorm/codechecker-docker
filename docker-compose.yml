@@ -1,33 +1,35 @@
-# in the docker-compose file, reference the image directory
-# in the `build` property. This makes `docker-compose` build
-# the directory as an image and then use it when creating
-# containers.
-
 version: '3.2'
+
 services:
   codechecker:
+    container_name: 'codechecker'
     restart: 'always'
     ports:
       - '8001:8001'
     build: './codechecker'
     volumes:
-      - src:/opt/src
+      - './src:/opt/src'
+    links:
+      - 'db'
+    depends_on:
+      - 'db'
 
-  postgres:
+  db:
+    container_name: 'db'
     restart: 'always'
     expose:
       - '5432'
     ports:
       - '5432:5432'
     environment:
-      - "DB_USER=codechecker"
-      - "DB_PASSWORD=codechecker"
-      - "CONFIG_DB=codechecker_config"
-      - "DEFAULT_DB=default_product"
-      - "POSTGRES_PASSWORD=password"
+      - 'DB_USER=codechecker'
+      - 'DB_PASSWORD=codechecker'
+      - 'CONFIG_DB=codechecker_config'
+      - 'DEFAULT_DB=default_product'
+      - 'POSTGRES_PASSWORD=password'
     build: './db'
     volumes:
-      - database_data:/var/lib/postgresql/data
+      - './database_data:/var/lib/postgresql/data'
     networks:
       infranet:
         aliases:
