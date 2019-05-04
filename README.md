@@ -1,12 +1,12 @@
-#CodeChecker on Docker
+# CodeChecker on Docker
 
 Run the latest version on CodeChecker with Docker and Docker Compose.
 
-##Requirements
+## Requirements
 - docker
 - docker-compose
 
-##Get started
+## Get started
 To build the required images:
 
 ```
