@@ -1,5 +1,7 @@
 FROM ubuntu:18.04
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends apt-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -33,13 +35,14 @@ RUN apt-get update\
     python-psycopg2 \
     postgresql-common \
     python-pip \
-    postgresql-client
+    postgresql-client \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
     && sudo apt-get -y install \
         clang \
         clang-tidy \
-        build-essential \
         curl \
         doxygen \
         gcc-multilib \
@@ -50,27 +53,33 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+COPY ["init.sh", "entrypoint.sh", "wait-for-it/wait-for-it.sh", "/"]
 
 ###The above should not change too often.
 # below is the more lightweight stuff that can change more often
 
+USER casper
+
 WORKDIR /home/casper/
 
 RUN echo "export PATH=$PATH:/home/casper/codechecker/build/CodeChecker/bin" >> /home/casper/.bashrc \
+    && echo ". /home/casper/codechecker/venv/bin/activate" >> /home/casper/.bashrc \
     && cd /home/casper/
 
 RUN git clone https://github.com/Ericsson/codechecker.git --depth 1 codechecker \
     && cd codechecker \
     && make venv \
     && . $PWD/venv/bin/activate \
+    && pip install psycopg2==2.8.1 \
     && make package
 
 # We use this to connect to the postgres db
 RUN echo "*:5432:*:codechecker:codechecker" >> ~/.pgpass && \
     chmod 0600 ~/.pgpass
 
-USER casper
-CMD /bin/bash
+RUN mkdir /home/casper/.codechecker \
+    && touch /home/casper/.codechecker/root.user
 
-COPY entrypoint.sh /entrypoint.sh
+CMD nohup /init.sh & sleep infinity
+
 ENTRYPOINT ["/entrypoint.sh"]

@@ -1,27 +1,12 @@
 version: "3.2"
 
 services:
-  codechecker:
-    container_name: "codechecker"
-    expose:
-      - "8001"
-    ports:
-      - "8001:8001"
-    build: "./codechecker"
-    volumes:
-      - "src:/home/casper/src"
-    links:
-      - "db"
-    depends_on:
-      - "db"
-    tty: true
-
   db:
-    container_name: "db"
-    restart: "always"
+    container_name: db
+    restart: always
     ports:
       - "5432:5432"
-    build: "./db"
+    build: ./db
     environment:
       - "DB_USER=codechecker"
       - "DB_PASSWORD=codechecker"
@@ -29,7 +14,22 @@ services:
       - "DEFAULT_DB=default_product"
       - "POSTGRES_PASSWORD=password"
     volumes:
-      - "database_data:/var/lib/postgresql/data"
+      - database_data:/var/lib/postgresql/data
+
+  codechecker:
+    container_name: codechecker
+    expose:
+      - "8001"
+    ports:
+      - "8001:8001"
+    build: ./codechecker
+    volumes:
+      - src:/home/casper/src
+    links:
+      - db
+    depends_on:
+      - db
+    tty: true
 
 volumes:
   database_data:
