@@ -14,6 +14,8 @@ RUN apt-get update \
         curl \
         autoconf \
         automake \
+        cmake \
+        ninja-build \
         pkg-config \
         libevent-dev \
         libncurses5-dev \
@@ -54,6 +56,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY ["init.sh", "entrypoint.sh", "wait-for-it/wait-for-it.sh", "/"]
+RUN mkdir /src && chown casper:casper /src
 
 ###The above should not change too often.
 # below is the more lightweight stuff that can change more often

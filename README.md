@@ -19,9 +19,9 @@ $ docker-compose up
 You should now be able to open the [CodeChecker Web Viewer]("http://localhost:8001") on your host machine.
 
 
-A volume __./src__ inside the repo directory is mounted to __/home/casper/src__ inside the container. This is a good place to put the sources for the packages you want to build.
+Directory __./src__ inside the repo is mounted to __/home/casper/src__ on the container. This is a good place to put the sources for the packages you want to build.
 
-For postgres __./database_data__ is mounted as a volume into __/var/lib/postgresql/data__ on the container
+For the postgres container, __./database_data__ is mounted as a volume into __/var/lib/postgresql/data__.
 
 
 To start a shell inside the codechecker container:
